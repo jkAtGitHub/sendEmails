@@ -1,0 +1,9 @@
+Dear ${PERSON_NAME},
+
+This is a test message.
+But you should see an HTML attachment to this mail.
+If not, just call out "Houston, we have a problem"; we will send a team to fix it ASAP.
+
+Yours Truly,
+
+Athulya GK
