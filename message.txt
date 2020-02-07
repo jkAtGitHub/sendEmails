@@ -1,9 +1,9 @@
 Dear ${PERSON_NAME},
 
-This is a test message.
-But you should see an HTML attachment to this mail.
-If not, just call out "Houston, we have a problem"; we will send a team to fix it ASAP.
+Thank you for submitting your work w.r.t ${HOMEWORK} for MATH 167.
+You should find your graded work as an HTML attachment to this mail.
+If not, pls let me know; we will try to fix it ASAP.
 
 Yours Truly,
 
-Athulya GK
+Dr. Bremer

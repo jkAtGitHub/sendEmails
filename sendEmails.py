@@ -1,9 +1,10 @@
 from string import Template
 # import the smtplib module. It should be included in Python by default
-import smtplib
+import smtplib, ssl
 import sys
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import os
 
 def read_template(filename):
     with open(filename, 'r', encoding='utf-8') as template_file:
@@ -36,47 +37,82 @@ def main():
     # set up the SMTP server
     MY_ADDRESS = sys.argv[1]
     password = sys.argv[2]
-    contacts_filename = sys.argv[3]
-    message_filename = sys.argv[4]
+    homework_id = sys.argv[3]
+    contacts_filename = "contacts.txt" #sys.argv[3]
+    message_filename = "message.txt" #sys.argv[4]
 
-    s = smtplib.SMTP(host='smtp.gmail.com', port=587)
-    s.starttls()
-    s.login(MY_ADDRESS, password)
+    try:
+        # Set the default socket timeout to a value that prevents connections
+        # to our SMTP server from timing out, due to sendmail's greeting pause
+        # feature.
+        #socket.setdefaulttimeout(100)
 
-    names, emails = get_contacts(contacts_filename)  # read contacts
-    message_template = read_template(message_filename)
+        port = 465
+        context = ssl.create_default_context()
+        s = smtplib.SMTP_SSL("smtp.gmail.com", port, context=context)
+        #s.ehlo()
+
+        #s.starttls()
+        #s.ehlo
+
+        s.login(MY_ADDRESS, password)
+
+        names, emails = get_contacts(contacts_filename)  # read contacts
+        message_template = read_template(message_filename)
+
+        names, emails = get_contacts(contacts_filename)  # read contacts
+        message_template = read_template(message_filename)
+        not_submitted_list = []
 
 
+        # For each contact, send the email:
+        for name, email in zip(names, emails):
+            msg = MIMEMultipart()       # create a message
 
-    # For each contact, send the email:
-    for name, email in zip(names, emails):
-        print(f"Sending mail to {name}")
-        msg = MIMEMultipart()       # create a message
+            # add in the actual person name to the message template
+            message = message_template.substitute(PERSON_NAME=name.title(), HOMEWORK = homework_id)
 
-        # add in the actual person name to the message template
-        message = message_template.substitute(PERSON_NAME=name.title())
+            # setup the parameters of the message
+            msg['From']=MY_ADDRESS
+            msg['To']=email
+            msg['Subject']=f"Graded sheets for {homework_id}"
 
-        # setup the parameters of the message
-        msg['From']=MY_ADDRESS
-        msg['To']=email
-        msg['Subject']="This is not a DRILL; Houston Calling"
+            # add in the message body
+            msg.attach(MIMEText(message, 'plain'))
+            graded_file_path = os.path.join(homework_id, name)
+            if not os.path.exists(graded_file_path):
+                not_submitted_list.append(name)
+                continue
 
+            graded_filenames = [f for f in os.listdir(graded_file_path) if f.endswith("html")]
+            for graded_filename in graded_filenames:
+                html = get_html(os.path.join(graded_file_path, graded_filename))
+                html_attachment = MIMEText(html, 'html')
+                html_attachment.add_header('Content-Disposition', 'attachment', filename=graded_filename)
+                msg.attach(html_attachment)
+            # send the message via the server set up earlier.
+            s.send_message(msg)
 
-        # add in the message body
-        msg.attach(MIMEText(message, 'plain'))
-        filename = "data/_frdkl_sine.html"
-        html = get_html(filename)
-        part2 = MIMEText(html, 'html')
-        part2.add_header('Content-Disposition', 'attachment', filename=filename)
-
-        msg.attach(part2)
-
-        # send the message via the server set up earlier.
-        s.send_message(msg)
-
-        del msg
-        # Terminate the SMTP session and close the connection
-    s.quit()
+            del msg
+            print(f"Mail sent to {name}")
+        # Send a message to self listing who hasn't submitted their HW
+        if not_submitted_list:
+            msg = MIMEMultipart()
+            message = f"""The following people haven't submitted their homework"""
+            for not_submitted in not_submitted_list:
+                message += "\n" + not_submitted
+            # setup the parameters of the message
+            msg['From']=MY_ADDRESS
+            msg['To']=MY_ADDRESS
+            msg['Subject']=f"Students who haven't submiited {homework_id}"
+            # add in the message body
+            msg.attach(MIMEText(message, 'plain'))
+            # send the message via the server set up earlier.
+            s.send_message(msg)
+            # Terminate the SMTP session and close the connection
+        s.quit()
+    except Exception as ex:
+        print(ex)
 
 
 
