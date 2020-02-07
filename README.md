@@ -4,7 +4,7 @@
 0. Goto https://myaccount.google.com/lesssecureapps ; signin to the gmail account from which emails will be sent and turn the Allow less secure apps switch to **ON**
 
 1. Save the contacts.txt file in the following format:
-  - name,emailid
+    - name,emailid
 
 2. Modify the message.txt to edit the template.
 
