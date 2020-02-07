@@ -1,13 +1,17 @@
-# sendEmails
-Save the contacts.txt file in the following format:
-name,emailid
+# Send Auto Emails
+## Send graded results to contact list
 
-Place the homework folder. The folder structure should be
+0. Goto https://myaccount.google.com/lesssecureapps ; signin to the gmail account from which emails will be sent and turn the Allow less secure apps switch to **ON**
+
+1. Save the contacts.txt file in the following format:
+  - name,emailid
+
+2. Modify the message.txt to edit the template.
+
+3. Place the homework folder in the same folder as the script. The homework folder structure should be
   - <homework_id>
-    - student_name
+    - student_name (should match the name in the contacts.txt)
       - graded_file1.html
       - graded_file2.html5
-      
-
-
-python sendEmails.py <sender_emailid> <sender_email_password> <homeword_folder>
+4. Execute the Python script
+```python sendEmails.py <sender_emailid> <sender_email_password> <homeword_folder>```
