@@ -68,9 +68,9 @@ def main():
         # For each contact, send the email:
         for name, email in zip(names, emails):
             msg = MIMEMultipart()       # create a message
-
+            first_name = email.replace("@sjsu.edu", "").split(".")[0]
             # add in the actual person name to the message template
-            message = message_template.substitute(PERSON_NAME=name.title(), HOMEWORK = homework_id)
+            message = message_template.substitute(PERSON_NAME=first_name.title(), HOMEWORK = homework_id)
 
             # setup the parameters of the message
             msg['From']=MY_ADDRESS
