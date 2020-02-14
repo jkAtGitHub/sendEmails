@@ -42,23 +42,10 @@ def main():
     message_filename = "message.txt" #sys.argv[4]
 
     try:
-        # Set the default socket timeout to a value that prevents connections
-        # to our SMTP server from timing out, due to sendmail's greeting pause
-        # feature.
-        #socket.setdefaulttimeout(100)
-
         port = 465
         context = ssl.create_default_context()
         s = smtplib.SMTP_SSL("smtp.gmail.com", port, context=context)
-        #s.ehlo()
-
-        #s.starttls()
-        #s.ehlo
-
         s.login(MY_ADDRESS, password)
-
-        names, emails = get_contacts(contacts_filename)  # read contacts
-        message_template = read_template(message_filename)
 
         names, emails = get_contacts(contacts_filename)  # read contacts
         message_template = read_template(message_filename)
